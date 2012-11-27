@@ -1,0 +1,29 @@
+useDynLib(robustloggamma, .registration=TRUE) # -> R >= 2.3.0
+
+###importFrom("graphics", plot)# < more ?
+
+## # Export all names
+## exportPattern(".")                      
+
+## Functions defined in this package
+export(
+ dloggamma,
+ ploggamma,
+ qloggamma,
+ rloggamma,
+ loggammarob,
+ loggammarob.control,
+# loggammarob.QTau,
+# loggammarob.WQTau,
+# loggammarob.WL,
+# loggammarob.oneWL,
+# loggamma.ML,       
+ loggammarob.test
+)
+
+## Register all the methods for S3 generics elsewhere
+## in case namespace is loaded but not currently attached.
+
+S3method(print, loggammarob)
+S3method(summary, loggammarob)
+S3method(print, summary.loggammarob)
