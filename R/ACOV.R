@@ -42,3 +42,19 @@ AVAR.ML.quantile.loggamma <- function(p, mu=0, sigma=1, lambda=0, prob=NULL) {
   return(res)
 }
 
+## Asymptotics Variance for the 2 parameters case
+## original scale
+avarshape <- function(shape) 
+  shape/(shape*trigamma(shape)-1)
+avarscale <- function(scale, shape) 
+  scale^2*trigamma(shape)/(shape*trigamma(shape)-1)
+
+## log scale
+avarlambda <- function(shape) 
+  shape^(-2)/(4*(shape*trigamma(shape) - 1))
+avarmu <- function(shape) 
+  1/shape
+avareta <- function(scale, shape) 
+  scale^2*shape
+
+

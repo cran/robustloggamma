@@ -23,9 +23,10 @@ eta = NULL, type = "Wald", conf.level = 0.95, prob = 0.00001)
   \item{prob}{quantile order of the loggamma to be used in the
     numerical calculation of the expected Fisher Information.}
 }
-% \details{
-% TO BE DONE!
-% }
+\details{
+If no null values are provided, the function report the test for
+\code{mu=0}, \code{sigma=1} and \code{lambda=0}.
+}
 
 \value{
 An object of class 'htest' containing the following components:

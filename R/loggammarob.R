@@ -212,6 +212,11 @@ loggammarob.test <- function(x, mu=NULL, sigma=NULL, lambda=NULL, eta=NULL, type
   ## x an object from loggammarob
   if (!(x$method %in% c("WL", "oneWL", "ML")))
     stop("Inference is available only for 'WL', 'oneWL' and 'ML'")
+  if (is.null(mu) & is.null(sigma) & is.null(lambda) & is.null(eta)) {
+    mu <- 0
+    sigma <- 1
+    lambda <- 0
+  }
   alternative <- "two.sided"  
   dname <- names(x$data)  
   type <- match.arg(type)
@@ -221,16 +226,20 @@ loggammarob.test <- function(x, mu=NULL, sigma=NULL, lambda=NULL, eta=NULL, type
     null.value <- c(mu, sigma, lambda)
     if (type=="Wald") {
       param <- estimate - null.value
+      df <- length(param)      
       acov <- ACOV.ML.loggamma(sigma=x$sigma,lambda=x$lambda, prob=prob)
-      hatJ <- acov$Fisher.Info
-      hatJ <- matrix(hatJ[as.logical(components%*%t(components))], nrow=length(param), byrow=TRUE)
-      wstat <- sum(x$weights)*t(param)%*%hatJ%*%param
-      df <- length(param)
+      if (df==1) {
+        hatJ <- 1/diag(acov$cov)[components]
+      } else {
+        hatJ <- acov$Fisher.Info
+        hatJ <- matrix(hatJ[as.logical(components%*%t(components))], nrow=length(param), byrow=TRUE)
+      }
+      wstat <- drop(sum(x$weights)*t(param)%*%hatJ%*%param)
       pval <- pchisq(q=wstat, df=df, ncp=0, lower.tail = FALSE, log.p = FALSE)
       estcov <- diag(acov$cov)[components]
       if (df==1)
         cint <- estimate+c(-1,1)*qnorm(1-(1-conf.level)/2)*sqrt(estcov)/sqrt(sum(x$weights))
-      else
+      else       
         cint <- c(NA,NA)
     }
     names(wstat) <- "ww"
