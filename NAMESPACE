@@ -18,7 +18,8 @@ export(
 # loggammarob.WL,
 # loggammarob.oneWL,
 # loggamma.ML,       
- loggammarob.test
+ loggammarob.test,
+ loggammarob.wilks
 )
 
 ## Register all the methods for S3 generics elsewhere

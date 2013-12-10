@@ -1,3 +1,14 @@
+#############################################################
+#	All functions in this file are copyrighted
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
 "Regtau.f" <- function(x,y,b1,c1,b2,c2,N,tol=1e-6,seed=567) {
   n  <-length(y)
   rs <- tmp1 <- tmp2 <- rep(0,n)

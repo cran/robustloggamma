@@ -1,27 +1,39 @@
+#############################################################
+#	All functions in this file are copyrighted
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
 # Extended loggamma distribution
 # =======================================
 
-dloggamma <- function(x, mu=0, sigma=1,lambda) {
+dloggamma <- function(x, mu=0, sigma=1, lambda, log = FALSE) {
 # generalized loggamma density
   zero <- 0.0001
   x <- (x-mu)/sigma
   if (abs(lambda) > zero) {
     lam2 <- lambda^(-2)
-    res  <- exp(log(abs(lambda))+lam2*log(lam2)+(lam2)*(lambda*x-exp(lambda*x))-lgamma(lam2))
+    res  <- log(abs(lambda))+lam2*log(lam2)+(lam2)*(lambda*x-exp(lambda*x))-lgamma(lam2) - log(sigma)
+    if (!log)
+      res <- exp(res)
   } else {
-    res <- dnorm(x,mean=0,sd=1)
+    res <- dnorm(x,mean=0, sd=sigma, log=log)
   }
-  res <- res/sigma
   return(res)
 }
 
-ploggamma <- function(q, mu=0, sigma=1,lambda) { 
+ploggamma <- function(q, mu=0, sigma=1, lambda) { 
 # generalized loggamma cdf
   zero <- 0.0001
   q <- (q-mu)/sigma
   if (abs(lambda) > zero) {
     alpha <- 1/lambda^2
-    res   <- pgamma(alpha*exp(lambda*q),shape=alpha,rate=1)
+    res   <- pgamma(alpha*exp(lambda*q), shape=alpha, rate=1)
   } else {
     res <- pnorm(q,mean=0,sd=1)
   }
@@ -30,7 +42,7 @@ ploggamma <- function(q, mu=0, sigma=1,lambda) {
   return(res)
 }
 
-qloggamma <- function(p, mu=0, sigma=1, lambda){ 
+qloggamma <- function(p, mu=0, sigma=1, lambda) { 
 # p-quantile of generalized loggamma cdf
   zero <- 0.0001
   if (lambda < -zero) p <- 1-p

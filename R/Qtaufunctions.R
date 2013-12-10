@@ -1,4 +1,13 @@
-# Qtau_functions.s
+#############################################################
+#	All functions in this file are copyrighted
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
 # Biweight functions
 

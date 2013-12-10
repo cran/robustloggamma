@@ -2,10 +2,10 @@
 \alias{loggammarob.test}
 
 \title{
-Robust inference for the extended loggamma model. 
+Robust inference for the generalized loggamma model. 
 }
 \description{
-Robust Tests and confidence intervals for the parameters of the extended
+Robust Tests and confidence intervals for the parameters of the generalized
 loggamma model.
 }
 \usage{
@@ -43,11 +43,11 @@ An object of class 'htest' containing the following components:
 }
 
 \references{
-  C. Agostinelli, A. Marazzi and V.J. Yohai (2011) Robust estimates of
-  the generalized loggamma distribution, submitted.
+  C. Agostinelli, A. Marazzi and V.J. Yohai (2013) Robust estimates of
+  the generalized loggamma distribution, Technometrics, Accepted.
 }
 \author{
-  A. Marazzi, C. Agostinelli and V.J. Yohai
+  A. Marazzi, C. Agostinelli, V.J. Yohai and A. Randriamiharisoa
 }
 
 \seealso{

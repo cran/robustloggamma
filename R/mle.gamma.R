@@ -1,3 +1,14 @@
+#############################################################
+#	All functions in this file are copyrighted
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
 mle.gamma <- function(x, tol=1e-8) {
   n <- length(x)
   shape1 <- mean(x)^2/(mean(x^2)-mean(x)^2)

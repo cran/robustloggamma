@@ -1,4 +1,15 @@
-loggammarob <- function(x, weights=rep(1, length(x)), method=c("oneWL", "WQTau", "WL", "QTau", "ML"), control, ...) {
+#############################################################
+#	loggammarob function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
+loggammarob <- function(x, start=NULL, weights=rep(1, length(x)), method=c("oneWL", "WQTau", "WL", "QTau", "ML"), control, ...) {
   method <- match.arg(method)
   x <- na.omit(x)
   if (!is.null(na <- attr(x, "na.action")))
@@ -27,11 +38,11 @@ loggammarob <- function(x, weights=rep(1, length(x)), method=c("oneWL", "WQTau",
    else if (method=="WQTau")
      result <- loggammarob.WQTau(x, weights, control)
    else if (method=="WL")
-     result <- loggammarob.WL(x, weights, control)
+     result <- loggammarob.WL(x, start, weights, control)
    else if (method=="oneWL")
-     result <- loggammarob.oneWL(x, weights, control)
+     result <- loggammarob.oneWL(x, start, weights, control)
    else if (method=="ML")
-     result <- loggammarob.ML(x, weights, control)  
+     result <- loggammarob.ML(x, start, weights, control)  
    result$eta <- Exp.response(result$mu, result$sigma, result$lambda)
    result$data <- x
    result$method <- method
@@ -40,7 +51,18 @@ loggammarob <- function(x, weights=rep(1, length(x)), method=c("oneWL", "WQTau",
    return(result)
 }
 
-loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=6.08, lower=-7, upper=7, n=201, max.it=750, refine.tol=1e-6, nResample=100, bw=0.3, raf=c("NED","GKL","PWD","HD","SCHI2"), tau=1, subdivisions=1000, lambda.step=TRUE, sigma.step=TRUE, step=1, minw=0.04, nexp=1000, reparam=NULL, bootstrap=FALSE, bootstrap.lambda=NULL) {
+#############################################################
+#	loggammarob.control function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
+loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=6.08, lower=-7, upper=7, n=201, max.it=750, refine.tol=1e-6, nResample=100, bw=0.3, smooth=NULL, raf=c("NED","GKL","PWD","HD","SCHI2"), tau=1, subdivisions=1000, lambda.step=TRUE, sigma.step=TRUE, step=1, minw=0.04, nexp=1000, reparam=NULL, bootstrap=FALSE, bootstrap.lambda=NULL) {
 
 #tuning.rho, tuning.chi # c1, c2
 #lower,upper     # optimization interval
@@ -50,6 +72,7 @@ loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=
 #nResample       # number of subsamples
 ## Parameters for Fully Itereated Weighted Likelihood and for One Step Weighted Likelihood 
 #bw              # bandwidth
+#smooth          # smooth parameter, if not NULL then bw = smooth*\hat{sd}
 #raf             # residual adjustment function c("SCHI2", "NED", "HD", "GKL")
 #tau             # parameter for the GKL and PD family
 #subdivisions
@@ -86,7 +109,9 @@ loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=
 
   if (length(bw) > 1 || bw < 0)
     stop("'bw' must be a positive scalar")
-
+  if (!is.null(smooth) && (length(bw) > 1 || bw < 0))
+    stop("'smooth' must be NULL or a positive scalar")
+  
   if (length(subdivisions) > 1 || subdivisions < 0)
     stop("'subdivisions' must be a positive scalar")
   subdivisions <- round(subdivisions)
@@ -120,9 +145,20 @@ loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=
   if (!is.logical(bootstrap))
     stop("'bootstrap' must be a logical")
 
-  res <- list(method=method, tuning.rho=tuning.rho, tuning.psi=tuning.psi, lower=lower, upper=upper, n=n, max.it=max.it, refine.tol=refine.tol, nResample=nResample, bw=bw, raf=raf, tau=tau, subdivisions=subdivisions, lambda.step=lambda.step, sigma.step=sigma.step,step=step,minw=minw, nexp=nexp, reparam=reparam, bootstrap=bootstrap, bootstrap.lambda=bootstrap.lambda)
+  res <- list(method=method, tuning.rho=tuning.rho, tuning.psi=tuning.psi, lower=lower, upper=upper, n=n, max.it=max.it, refine.tol=refine.tol, nResample=nResample, bw=bw, smooth=smooth, raf=raf, tau=tau, subdivisions=subdivisions, lambda.step=lambda.step, sigma.step=sigma.step,step=step,minw=minw, nexp=nexp, reparam=reparam, bootstrap=bootstrap, bootstrap.lambda=bootstrap.lambda)
   return(res)
 }
+
+#############################################################
+#	loggammarob.QTau function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
 loggammarob.QTau <- function(x, w=rep(1, length(x)), control=loggammarob.control()) {
   lgrid <- seq(control$lower, control$upper, length.out=control$n)
@@ -134,6 +170,17 @@ loggammarob.QTau <- function(x, w=rep(1, length(x)), control=loggammarob.control
   result <- list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL)
   return(result)
 }
+
+#############################################################
+#	loggammarob.WQTau function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
 loggammarob.WQTau <- function(x, w=rep(1, length(x)), control=loggammarob.control()) {
   lgrid <- seq(control$lower, control$upper, length.out=control$n)
@@ -150,63 +197,144 @@ loggammarob.WQTau <- function(x, w=rep(1, length(x)), control=loggammarob.contro
   return(result)
 }
 
-loggammarob.WL <- function(x, w=rep(1, length(x)), control=loggammarob.control()) {
-  lgrid <- seq(control$lower, control$upper, length.out=control$n)
-  resQ <- WQtau(ri=x,w=w,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
-  pp <- ppoints(length(x))
-  ql <- qloggamma(p=pp, lambda=resQ$lam1)
-  dl <- dloggamma(x=ql, lambda=resQ$lam1)
-  vl <- pp*(1-pp)/dl^2
-  wl <- 1/sqrt(vl)
+#############################################################
+#	loggammarob.WL function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
-  resWQ <- WQtau(ri=x,w=wl,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol) 
-  
-  resWL <- Disparity.WML.loggamma(y=x,mu0=resWQ$mu2,sig0=resWQ$sig2,lam0=resWQ$lam2,lam.low=control$lower,lam.sup=control$upper,tol=control$refine.tol,maxit=control$max.it,lstep=control$lambda.step,sigstep=control$sigma.step,bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions)
-  
-  result <- list(mu=resWL$mu, sigma=resWL$sig, lambda=resWL$lam, weights=resWL$weights, iterations=resWL$nit, error=NULL, QTau=list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL), WQTau=list(mu=resWQ$mu2, sigma=resWQ$sig2, lambda=resWQ$lam2, weights=wl, iterations=NULL, error=NULL))
-  return(result)
-}
-
-loggammarob.ML <- function(x, w=rep(1, length(x)), control=loggammarob.control()) {
-  lgrid <- seq(control$lower, control$upper, length.out=control$n)
-  resQ <- WQtau(ri=x,w=w,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)  
-
-  resML <- WML.loggamma(y=x,wi=w,mu0=resQ$mu2,sig0=resQ$sig2,lam0=resQ$lam2,lam.low=control$lower,lam.sup=control$upper,tol=control$refine.tol,maxit=control$max.it,lstep=control$lambda.step,sigstep=control$sigma.step)
-  
-  result <- list(mu=resML$mu, sigma=resML$sig, lambda=resML$lam, weights=w, iterations=resML$nit, error=NULL)
-  return(result)
-}
-
-loggammarob.oneWL <- function(x, w=rep(1, length(x)), control=loggammarob.control()) {
-  lgrid <- seq(control$lower, control$upper, length.out=control$n)
-  if (!control$bootstrap) {
+loggammarob.WL <- function(x, start=NULL, w=rep(1, length(x)), control=loggammarob.control()) {
+  if (is.null(start)) {
+    lgrid <- seq(control$lower, control$upper, length.out=control$n)
     resQ <- WQtau(ri=x,w=w,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
     pp <- ppoints(length(x))
     ql <- qloggamma(p=pp, lambda=resQ$lam1)
     dl <- dloggamma(x=ql, lambda=resQ$lam1)
     vl <- pp*(1-pp)/dl^2
     wl <- 1/sqrt(vl)
+
+    resWQ <- WQtau(ri=x,w=wl,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
+    start <- c(resWQ$mu2, resWQ$sig2, resWQ$lam2)
+    QTau <- list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL)
+    WQTau <- list(mu=resWQ$mu2, sigma=resWQ$sig2, lambda=resWQ$lam2, weights=wl, iterations=NULL, error=NULL)
   } else {
-    resQ <- resWQ <- WQtauboot(ri=x,w=w,lambda=control$bootstrap.lambda,step=0.25,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
-    wl <- w
+    if (!is.numeric(start))
+      stop("'start' must be a numeric vector")
+    if (length(start)!=3)
+      stop("'start' must be a vector of length 3: mu, sigma2, lambda")
+    QTau <- NULL
+    WQTau <- NULL
+  }
+  
+  if (!is.null(control$smooth))
+    control$bw <- control$smooth*sqrt(start[2]) 
+  resWL <- Disparity.WML.loggamma(y=x,mu0=start[1],sig0=start[2],lam0=start[3],lam.low=control$lower,lam.sup=control$upper,tol=control$refine.tol,maxit=control$max.it,lstep=control$lambda.step,sigstep=control$sigma.step,bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions,minw=control$minw)
+  
+  result <- list(mu=resWL$mu, sigma=resWL$sig, lambda=resWL$lam, weights=resWL$weights, iterations=resWL$nit, error=NULL, QTau=QTau, WQTau=WQTau)
+  return(result)
+}
+
+#############################################################
+#	loggammarob.ML function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
+loggammarob.ML <- function(x, start=NULL, w=rep(1, length(x)), control=loggammarob.control()) {
+  if (is.null(start)) {
+    lgrid <- seq(control$lower, control$upper, length.out=control$n)
+    resQ <- WQtau(ri=x,w=w,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
+    start <- c(resQ$mu2, resQ$sig2, resQ$lam2)    
+  } else {
+    if (!is.numeric(start))
+      stop("'start' must be a numeric vector")
+    if (length(start)!=3)
+      stop("'start' must be a vector of length 3: mu, sigma2, lambda") 
+  }
+  resML <- WML.loggamma(y=x,wi=w,mu0=start[1],sig0=start[2],lam0=start[3],lam.low=control$lower,lam.sup=control$upper,tol=control$refine.tol,maxit=control$max.it,lstep=control$lambda.step,sigstep=control$sigma.step)
+  
+  result <- list(mu=resML$mu, sigma=resML$sig, lambda=resML$lam, weights=w, iterations=resML$nit, error=NULL)
+  return(result)
+}
+
+#############################################################
+#	loggammarob.oneWL function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
+loggammarob.oneWL <- function(x, start=NULL, w=rep(1, length(x)), control=loggammarob.control()) {
+  if (is.null(start)) {
+    lgrid <- seq(control$lower, control$upper, length.out=control$n)
+    if (!control$bootstrap) {
+      resQ <- WQtau(ri=x,w=w,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
+      pp <- ppoints(length(x))
+      ql <- qloggamma(p=pp, lambda=resQ$lam1)
+      dl <- dloggamma(x=ql, lambda=resQ$lam1)
+      vl <- pp*(1-pp)/dl^2
+      wl <- 1/sqrt(vl)
+    } else {
+      resQ <- resWQ <- WQtauboot(ri=x,w=w,lambda=control$bootstrap.lambda,step=0.25,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
+      wl <- w
 ###    cat(resQ$mu1, resQ$sig1, resQ$lam1, '\n')
 ###    resQ <- list(); resQ$lam1 <- control$bootstrap.lambda
-  }
+    }
 
-  if (!control$bootstrap)
-    resWQ <- WQtau(ri=x,w=wl,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol) 
+    if (!control$bootstrap)
+      resWQ <- WQtau(ri=x,w=wl,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol) 
   ## else
   ##   resWQ <- WQtauboot(ri=x,w=wl,lambda=control$bootstrap.lambda,step=0.25,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
 
 ####    cat(resWQ$mu2, resWQ$sig2, resWQ$lam2, '\n')
+
+    start <- c(resWQ$mu2, resWQ$sig2, resWQ$lam2)
+    QTau <- list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL)
+    WQTau <- list(mu=resWQ$mu2, sigma=resWQ$sig2, lambda=resWQ$lam2, weights=wl, iterations=NULL, error=NULL)    
+  } else {
+    if (!is.numeric(start))
+      stop("'start' must be a numeric vector")
+    if (length(start)!=3)
+      stop("'start' must be a vector of length 3: mu, sigma2, lambda")    
+    QTau <- NULL
+    WQTau <- NULL
+  }
+
+  if (!is.null(control$smooth))
+    control$bw <- control$smooth*sqrt(start[2]) 
   
   if (is.null(control$reparam))
-    resOWL <- WMLone.loggamma(yi.sorted=x,mu0=resWQ$mu2,sig0=resWQ$sig2,lam0=resWQ$lam2,bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions,step=control$step,minw=control$minw,nexp=control$nexp)
+    resOWL <- WMLone.loggamma(yi.sorted=x,mu0=start[1],sig0=start[2],lam0=start[3],bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions,step=control$step,minw=control$minw,nexp=control$nexp)
   else 
-    resOWL <- WMLone.reparam.loggamma(yi.sorted=x,mu0=resWQ$mu2,sig0=resWQ$sig2,lam0=resWQ$lam2,bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions,step=control$step,minw=control$minw,nexp=control$nexp,reparam=control$reparam)  
-  result <- list(mu=resOWL$mu, sigma=resOWL$sig, lambda=resOWL$lam, weights=resOWL$weights, iterations=1, error=resOWL$error, step=control$step, QTau=list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL), WQTau=list(mu=resWQ$mu2, sigma=resWQ$sig2, lambda=resWQ$lam2, weights=wl, iterations=NULL, error=NULL))
+    resOWL <- WMLone.reparam.loggamma(yi.sorted=x,mu0=start[1],sig0=start[2],lam0=start[3],bw=control$bw,raf=control$raf,tau=control$tau,nmod=control$subdivisions,step=control$step,minw=control$minw,nexp=control$nexp,reparam=control$reparam)  
+  result <- list(mu=resOWL$mu, sigma=resOWL$sig, lambda=resOWL$lam, weights=resOWL$weights, iterations=1, error=resOWL$error, step=control$step, QTau=QTau, WQTau=WQTau)
   return(result)
 }
+
+#############################################################
+#	loggammarob.test function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
 loggammarob.test <- function(x, mu=NULL, sigma=NULL, lambda=NULL, eta=NULL, type="Wald", conf.level = 0.95, prob=0.00001) {
   ## x an object from loggammarob
@@ -276,6 +404,17 @@ loggammarob.test <- function(x, mu=NULL, sigma=NULL, lambda=NULL, eta=NULL, type
   return(rval)
 }
 
+#############################################################
+#	print.loggammarob function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
 ######## PRINT
 print.loggammarob <- function(x, digits = max(3, getOption("digits") - 3), ...) {
   cat("\nCall:\n",deparse(x$call),"\n\n",sep="")
@@ -286,6 +425,17 @@ print.loggammarob <- function(x, digits = max(3, getOption("digits") - 3), ...) 
   cat("\n")
   invisible(x)
 }
+
+#############################################################
+#	summary.loggammarob function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
 
 ########### SUMMARY
 summary.loggammarob <- function(object, p=NULL, conf.level=0.95, prob=0.00001, ...) {
@@ -344,6 +494,18 @@ summary.loggammarob <- function(object, p=NULL, conf.level=0.95, prob=0.00001, .
   return(object)
 }
 
+#############################################################
+#	print.summary.loggammarob function
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
+#PRINT.SUMMARY
 print.summary.loggammarob <- function(x, digits = max(3, getOption("digits") - 3), ...) {
   cat("\nCall:\n",deparse(x$call),"\n\n",sep="")
   cat("Location: ", format(x$mu, digits=digits))

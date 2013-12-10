@@ -6,7 +6,7 @@
 \alias{rloggamma}
 
 \title{
-The Extended Log Gamma dDistribution
+The Extended Log Gamma Distribution
 }
 \description{
 Density, distribution function, quantile function and random
@@ -14,23 +14,21 @@ Density, distribution function, quantile function and random
   \code{mu} (location), \code{sigma} (scale) and \code{lambda} (shape).
 }
 \usage{
-dloggamma(x, mu=0, sigma=1, lambda)
+dloggamma(x, mu=0, sigma=1, lambda, log=FALSE)
 ploggamma(q, mu=0, sigma=1, lambda)
 qloggamma(p, mu=0, sigma=1, lambda)
 rloggamma(n, mu=0, sigma=1, lambda)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{x,q}{vector of quantiles.}
-  \item{p}{vector of probabilities.}
-  \item{n}{number of observations.}
-  \item{mu}{location parameter.}
-  \item{sigma}{scale parameter.}
-  \item{lambda}{shape parameter.}
+  \item{x,q}{numeric. Vector of quantiles.}
+  \item{p}{numeric. Vector of probabilities.}
+  \item{n}{numeric. Number of observations.}
+  \item{mu}{numeric. Location parameter.}
+  \item{sigma}{numeric. Scale parameter.}
+  \item{lambda}{numeric. Shape parameter.}
+  \item{log}{logical. If \code{TRUE}, the log of the density is reported.}
 }
-% \details{
-% TO BE DONE!
-% }
 
 \value{
   \code{dloggamma} gives the density, \code{ploggamma} gives the distribution

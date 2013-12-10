@@ -1,3 +1,14 @@
+#############################################################
+#	All functions in this file are copyrighted
+#	Author: C. Agostinelli, A. Marazzi,
+#               V.J. Yohai and A. Randriamiharisoa
+#	Maintainer e-mail: claudio@unive.it
+#	Date: January, 1, 2013
+#	Version: 0.1
+#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#                  V.J. Yohai and A. Randriamiharisoa
+#############################################################
+
 "rimtrf" <-
 function(x,n=nrow(x),intch=1,tau=1.e-6) {
 np <- ncol(x)

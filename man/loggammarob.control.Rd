@@ -11,7 +11,7 @@
 loggammarob.control(method = "oneWL", tuning.rho = 1.547647,
   tuning.psi = 6.08, lower = -7, upper = 7, n = 201,
   max.it = 750, refine.tol = 1e-06, nResample = 100,
-  bw = 0.3, raf = c("NED", "GKL", "PWD", "HD", "SCHI2"),
+  bw = 0.3, smooth = NULL, raf = c("NED", "GKL", "PWD", "HD", "SCHI2"),
   tau = 1, subdivisions = 1000, lambda.step = TRUE,
   sigma.step = TRUE, step = 1, minw = 0.04, nexp = 1000,
   reparam = NULL, bootstrap=FALSE, bootstrap.lambda=NULL)
@@ -34,6 +34,9 @@ loggammarob.control(method = "oneWL", tuning.rho = 1.547647,
     to find the initial estimator. Currently defaults to 100 which works
     well in most situations.}
   \item{bw}{numeric. Bandwidth used in the Weighted Likelihood steps.}
+  \item{smooth}{\code{NULL} or numeric. When not \code{NULL} the
+    parameter \code{bw} is set to \code{smooth} times the square root of
+    the starting value of the scale parameter.} 
   \item{raf}{character. Residual adjustment function used in the Weighted
     Likelihood steps
     
@@ -73,8 +76,8 @@ loggammarob.control(method = "oneWL", tuning.rho = 1.547647,
 }
 
 \references{
-  C. Agostinelli, A. Marazzi and V.J. Yohai (2011) Robust estimates of
-  the generalized loggamma distribution, submitted.
+  C. Agostinelli, A. Marazzi and V.J. Yohai (2013) Robust estimates of
+  the generalized loggamma distribution, Technometrics, Accepted.
 }
 
 \author{
