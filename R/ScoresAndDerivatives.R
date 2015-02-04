@@ -3,9 +3,9 @@
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
 #	Maintainer e-mail: claudio@unive.it
-#	Date: January, 1, 2013
-#	Version: 0.1
-#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#	Date: January, 16, 2014
+#	Version: 0.1-1
+#	Copyright (C) 2014 C. Agostinelli A. Marazzi,
 #                  V.J. Yohai and A. Randriamiharisoa
 #############################################################
 
@@ -22,25 +22,42 @@ dloggamma <- function(x, mu=0, sigma=1, lambda, log = FALSE) {
     if (!log)
       res <- exp(res)
   } else {
-    res <- dnorm(x,mean=0, sd=sigma, log=log)
+    res <- dnorm(x, mean = 0, sd = 1, log = log)/sigma
   }
   return(res)
 }
 
-ploggamma <- function(q, mu=0, sigma=1, lambda) { 
+ploggamma <- function(q, mu=0, sigma=1, lambda, lower.tail=TRUE, log.p=FALSE) { 
 # generalized loggamma cdf
   zero <- 0.0001
   q <- (q-mu)/sigma
+  if (lambda < - zero)
+    lower.tail <- !lower.tail
   if (abs(lambda) > zero) {
     alpha <- 1/lambda^2
-    res   <- pgamma(alpha*exp(lambda*q), shape=alpha, rate=1)
+    res   <- pgamma(alpha*exp(lambda*q), shape=alpha, rate=1, lower.tail=lower.tail, log.p=log.p)
   } else {
-    res <- pnorm(q,mean=0,sd=1)
+    res <- pnorm(q, mean=0, sd=1, lower.tail=lower.tail, log.p=log.p)
   }
-  if (lambda < - zero)
-    res <- 1-res                                          
   return(res)
 }
+
+## ploggamma <- function(q, mu=0, sigma=1, lambda) { 
+## # generalized loggamma cdf
+##   n <- length(q)
+##   if (length(mu)!=1 | length(sigma)!=1 | length(lambda)!=1)
+##     stop("Parameters must have length equal to one")
+##   res <- .Fortran("ploggamm",
+##     as.double(q),
+##     as.integer(n),
+##     as.double(mu),
+##     as.double(sigma),
+##     as.double(lambda),
+##     p = double(n),
+##     PACKAGE="robustloggamma"
+##   )
+##   return(res$p)
+## }
 
 qloggamma <- function(p, mu=0, sigma=1, lambda) { 
 # p-quantile of generalized loggamma cdf

@@ -288,11 +288,11 @@ C
       IP1=I+1
       DO 50 J=IP1,K
    50 SM=SM+X(I,J)*DBLE(THETA(J))
-   60 SM1=SM
+CC Modified by C. Agostinelli 2015-02-06
+   60 SM1=REAL(SM)
 CC Modified by C. Agostinelli 2012-09-04
-CC    IF (X(I,I)) 80,70,80
       IF (X(I,I).EQ.0) THEN
-   70 CALL MESSGE(501,'SOLV  ',1)
+        CALL MESSGE(501,'SOLV  ',1)
       ENDIF
    80 THETA(I)=(THETA(I)-SM1)/X(I,I)
       RETURN
@@ -345,7 +345,7 @@ C
       SM=DZERO
       DO 30 J=I,K
    30 SM=SM+X(I,J)*DBLE(S(J))
-      SM1=SM
+      SM1=REAL(SM)
    40 R(I)=Y(I)-SM1
    50 CONTINUE
 C
@@ -374,7 +374,7 @@ C
       DO 90 J=1,K
       J1=J+INZ
    90 SM=SM+COV(J1)*DBLE(S(J))
-      SM1=SM
+      SM1=REAL(SM)
       R(I)=Y(I)-SM1
   100 CONTINUE
 C
@@ -413,17 +413,15 @@ C
       IF (0.GE.LPIVOT.OR.LPIVOT.GE.L1.OR.L1.GT.M) RETURN
       CL=ABS(U(1,LPIVOT))
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (CL) 130,130,70
       IF (CL.LE.0) GOTO 130
-   70 CONTINUE
+CC      CONTINUE
       B=DBLE(UP)*U(1,LPIVOT)
 C
 C  B MUST BE NONPOSITIVE HERE. IF B=0., RETURN.
 C
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (B) 80,130,130
       IF (B.GE.0) GOTO 130
-   80 B=ONE/B
+      B=ONE/B
       I2=LPIVOT-1+INZ
       INCR=L1-LPIVOT
       I2=I2+1
@@ -434,12 +432,11 @@ CC      IF (B) 80,130,130
       SM=SM+C(I3)*DBLE(U(1,I))
    90 I3=I3+1
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (SM) 100,120,100
       IF (SM.EQ.0) GOTO 120
-  100 SM=SM*B
-      C(I2)=C(I2)+SM*DBLE(UP)
+      SM=SM*B
+      C(I2)=REAL(C(I2)+SM*DBLE(UP))
       DO 110 I=L1,M
-      C(I4)=C(I4)+SM*DBLE(U(1,I))
+      C(I4)=REAL(C(I4)+SM*DBLE(U(1,I)))
   110 I4=I4+1
   120 CONTINUE
   130 RETURN
@@ -485,6 +482,9 @@ C     DATA ZERO,ONE/0.0D0,1.0D0/,CUTLO,CUTHI/4.441E-16,1.304E19/
 C
 C  PARAMETER CHECK
 C
+CC Added by C. Agostinelli 2015-02-06    
+      XMAX=ZERO
+
       NPRCHK=INCX.GT.0.AND.INCX*(N-1)+1.LE.MDX
       IF (.NOT.NPRCHK) CALL MESSGE(500,'NRM2  ',1)
 C
@@ -552,7 +552,7 @@ C
       DO 95 J=I,NN,INCX
       IF (ABS(X(J)).GE.HITEST) GOTO 100
    95 SUM=SUM+X(J)*DBLE(X(J))
-      XNRM=DSQRT(SUM)
+      XNRM=REAL(DSQRT(SUM))
       GOTO 300
 C
   200 CONTINUE
@@ -561,7 +561,7 @@ C
 C
 C  END MAIN LOOP
 C
-      XNRM=XMAX*DSQRT(SUM)
+      XNRM=REAL(XMAX*DSQRT(SUM))
   300 CONTINUE
       RETURN
       END
@@ -605,6 +605,7 @@ C                 SOLVING LEAST SQUARES PROBLEMS
 C                 REPRINT FROM PP.290-291,308 BY PERMISSION OF 
 C                 PRENTICE HALL, ENGLEWOOD CLIFFS, NEW JERSEY.
 C                 ADAPTED FOR ROBETH BY A. MARAZZI
+C                 ADAPTED BY C. AGOSTINELLI
 C.......................................................................
 C
       REAL U(IUE,M),C(MDC)
@@ -620,23 +621,22 @@ C
       DO 10 J=L1,M
    10 CL=AMAX1(ABS(U(1,J)),CL)
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (CL) 130,130,20
       IF (CL.LE.0) GOTO 130
-   20 CLINV=ONE/CL
+      CLINV=ONE/CL
       SM=(DBLE(U(1,LPIVOT))*CLINV)**2
       DO 30 J=L1,M
    30 SM=SM+(DBLE(U(1,J))*CLINV)**2
 C
 C  CONVERT DBLE. PRE. SM TO SNGL. PREC. SM1
 C
-      SM1=SM
-      CL=CL*SQRT(SM1)
+CC Modified by C. Agostinelli 2015-02-06
+CC      SM1=SM
+      CL=REAL(CL*DSQRT(SM))
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (U(1,LPIVOT)) 50,50,40
       IF (U(1,LPIVOT).GT.0) THEN
-   40 CL=-CL
+        CL=-CL
       ENDIF
-   50 UP=U(1,LPIVOT)-CL
+      UP=U(1,LPIVOT)-CL
       U(1,LPIVOT)=CL
       GOTO 70
 C
@@ -651,9 +651,8 @@ C
 C  B MUST BE NONPOSITIVE HERE. IF B=0., RETURN.
 C
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (B) 80,130,130
       IF (B.GE.0) GOTO 130
-   80 B=ONE/B
+      B=ONE/B
       I2=1-ICV+ICE*(LPIVOT-1)
       INCR=ICE*(L1-LPIVOT)
       DO 120 J=1,NCV
@@ -665,12 +664,13 @@ CC      IF (B) 80,130,130
       SM=SM+C(I3)*DBLE(U(1,I))
    90 I3=I3+ICE
 CC Modified by C. Agostinelli 2012-09-04
-CC      IF (SM) 100,120,100
       IF (SM.EQ.0) GOTO 120
-  100 SM=SM*B
-      C(I2)=C(I2)+SM*DBLE(UP)
+      SM=SM*B
+CC Modified by C. Agostinelli 2015-02-06
+      C(I2)=REAL(C(I2)+SM*DBLE(UP))
       DO 110 I=L1,M
-      C(I4)=C(I4)+SM*DBLE(U(1,I))
+CC Modified by C. Agostinelli 2015-02-06
+      C(I4)=REAL(C(I4)+SM*DBLE(U(1,I)))
   110 I4=I4+ICE
   120 CONTINUE
   130 RETURN
@@ -727,7 +727,7 @@ C  TO USE THE UNIFORM RANDOM NUMBER GENERATOR FROM R
 C
 
 CCCCC   10     CALL RANDOW(KSEED,RND)
- 10       RND = rndunif()
+ 10       RND = REAL(rndunif())
           IK=INT(RND*FLOAT(N))+1
           IF (IK.GT.N) IK=N
           IF (K.EQ.1) THEN
@@ -757,7 +757,8 @@ CCCCC   10     CALL RANDOW(KSEED,RND)
       SUMX=0.D0
       SUMY=0.D0
       DO 140 J=1,N1
-      K=TMP2(J)
+CC Modified by C. Agostinelli 2015-02-06
+      K=INT(TMP2(J))
       SUMXX=SUMXX+X(K)*X(K)
       SUMXY=SUMXY+X(K)*Y(K)
       SUMX=SUMX+X(K)
@@ -868,7 +869,7 @@ C  MODIFIED CLAUDIO 16/08/2012
 C  TO USE THE UNIFORM RANDOM NUMBER GENERATOR FROM R 
 C
 CCCCC   10     CALL RANDOW(KSEED,RND)
- 10       RND = rndunif()
+ 10       RND = REAL(rndunif())
           IK=INT(RND*FLOAT(N))+1
           IF (IK.GT.N) IK=N
           IF (K.EQ.1) THEN
@@ -898,7 +899,7 @@ CCCCC   10     CALL RANDOW(KSEED,RND)
       SUMX=0.D0
       SUMY=0.D0
       DO 140 J=1,N1
-      K=TMP2(J)
+      K=INT(TMP2(J))
       SUMXX=SUMXX+X(K)*X(K)
       SUMXY=SUMXY+X(K)*Y(K)
       SUMX=SUMX+X(K)

@@ -15,7 +15,7 @@ Density, distribution function, quantile function and random
 }
 \usage{
 dloggamma(x, mu=0, sigma=1, lambda, log=FALSE)
-ploggamma(q, mu=0, sigma=1, lambda)
+ploggamma(q, mu=0, sigma=1, lambda, lower.tail=TRUE, log.p=FALSE)
 qloggamma(p, mu=0, sigma=1, lambda)
 rloggamma(n, mu=0, sigma=1, lambda)
 }
@@ -27,7 +27,10 @@ rloggamma(n, mu=0, sigma=1, lambda)
   \item{mu}{numeric. Location parameter.}
   \item{sigma}{numeric. Scale parameter.}
   \item{lambda}{numeric. Shape parameter.}
-  \item{log}{logical. If \code{TRUE}, the log of the density is reported.}
+  \item{log, log.p}{logical. If \code{TRUE}, probabilities/densities p are returned
+          as log(p)}
+  \item{lower.tail}{logical. If \code{TRUE} (default), probabilities are P[X <= x],
+          otherwise, P[X > x].}
 }
 
 \value{

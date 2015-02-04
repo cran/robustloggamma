@@ -3,9 +3,9 @@
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
 #	Maintainer e-mail: claudio@unive.it
-#	Date: January, 1, 2013
-#	Version: 0.1
-#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#	Date: February, 5, 2015
+#	Version: 0.2
+#	Copyright (C) 2015 C. Agostinelli A. Marazzi,
 #                  V.J. Yohai and A. Randriamiharisoa
 #############################################################
 
@@ -32,23 +32,30 @@ loggammarob <- function(x, start=NULL, weights=rep(1, length(x)), method=c("oneW
     warning("Methods argument set by method is different from method in control\n", "Using method = ", method)
     control$method <- method
   }
+  ## x.orig <- x
+  ## mx <- median(x)
+  ## sx <- mad(x)
+  ## x <- (x - mx)/sx
   
-   if (control$method=="QTau")
-     result <- loggammarob.QTau(x, weights, control)
-   else if (method=="WQTau")
-     result <- loggammarob.WQTau(x, weights, control)
-   else if (method=="WL")
-     result <- loggammarob.WL(x, start, weights, control)
-   else if (method=="oneWL")
-     result <- loggammarob.oneWL(x, start, weights, control)
-   else if (method=="ML")
-     result <- loggammarob.ML(x, start, weights, control)  
-   result$eta <- Exp.response(result$mu, result$sigma, result$lambda)
-   result$data <- x
-   result$method <- method
-   result$call <- cl
-   class(result) <- "loggammarob"
-   return(result)
+  if (control$method=="QTau")
+    result <- loggammarob.QTau(x, weights, control)
+  else if (method=="WQTau")
+    result <- loggammarob.WQTau(x, weights, control)
+  else if (method=="WL")
+    result <- loggammarob.WL(x, start, weights, control)
+  else if (method=="oneWL")
+    result <- loggammarob.oneWL(x, start, weights, control)
+  else if (method=="ML")
+    result <- loggammarob.ML(x, start, weights, control)
+  ## result$mu <- result$mu*sx+mx
+  ## result$sigma <- result$sigma*sx  
+  result$eta <- Exp.response(result$mu, result$sigma, result$lambda)
+  ## result$data <- x.orig
+  result$data <- x  
+  result$method <- method
+  result$call <- cl
+  class(result) <- "loggammarob"
+  return(result)
 }
 
 #############################################################

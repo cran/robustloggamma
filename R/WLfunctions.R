@@ -3,9 +3,9 @@
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
 #	Maintainer e-mail: claudio@unive.it
-#	Date: January, 1, 2013
-#	Version: 0.1
-#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#	Date: February, 04, 2015
+#	Version: 0.2
+#	Copyright (C) 2015 C. Agostinelli A. Marazzi,
 #                  V.J. Yohai and A. Randriamiharisoa
 #############################################################
 # Disparity.WML_functions.s
@@ -56,6 +56,7 @@ WMLone.loggamma <- function(yi.sorted,mu0,sig0,lam0,bw=0.3,raf="SCHI2",tau=0.5,n
   wi   <- weights.loggamma(yi,mu0,sig0,lam0,bw=bw,raf=raf,tau=tau,nmod=nmod)
   wi[wi < minw] <- 0  
   yq <- qloggamma(ppoints(nexp), mu=mu0, sigma=sig0, lambda=lam0)
+  yq[is.infinite(yq)] <- sign(yq[is.infinite(yq)])*max(abs(yq[is.finite(yq)]))
 ##  J    <- JacobianB(yi,wi,mu0,sig0,lam0)
   J    <- JacobianB(yq,rep(1, length(yq)),mu0,sig0,lam0) ##Use Expected Fisher Information matrix
   U    <- UscoreB(yi,wi,mu0,sig0,lam0)
@@ -83,6 +84,7 @@ WMLone.reparam.loggamma <- function(yi.sorted,mu0,sig0,lam0,bw=0.3,raf="SCHI2",t
   wi   <- weights.loggamma(yi,mu0,sig0,lam0,bw=bw,raf=raf,tau=tau,nmod=nmod)
   wi[wi < minw] <- 0
   yq <- qloggamma(ppoints(nexp), mu=mu0, sigma=sig0, lambda=lam0)
+  yq[is.infinite(yq)] <- sign(yq[is.infinite(yq)])*max(abs(yq[is.finite(yq)]))  
 ##  J    <- JacobianGB(yi,wi,mu0,sig0,lam0,reparam$delta)
   J    <- JacobianGB(yq,rep(1,length(yq)),mu0,sig0,lam0,reparam$delta) ##Use Expected Fisher Information matrix
   U    <- UscoreGB(yi,wi,mu0,sig0,lam0,reparam$delta)

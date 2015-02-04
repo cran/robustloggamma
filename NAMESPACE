@@ -1,7 +1,7 @@
 useDynLib(robustloggamma, .registration=TRUE) # -> R >= 2.3.0
 
 ###importFrom("graphics", plot)# < more ?
-
+importFrom(robustbase, summarizeRobWeights)
 ## # Export all names
 ## exportPattern(".")                      
 
