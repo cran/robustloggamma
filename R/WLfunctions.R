@@ -36,7 +36,7 @@ pesi <- function(x, raf, tau=0.1) { # x: residui di Pearson
       x <- tau*((x + 1)^(1/tau) - 1)
     return(x)
   }
-  x  <- ifelse(x < 1e-10, 0, x)
+  x  <- ifelse(x < 1e-10, 0, x) ## inliers have always weights equal to 1!
   ww <- switch(raf,         ## park+basu+2003.pdf
     GKL   = gkl(x, tau),  ## lindsay+1994.pdf                 
     PWD   = pwd(x, tau),
@@ -154,41 +154,3 @@ Disparity.WML.loggamma <- function(y,mu0,sig0,lam0,lam.low,lam.sup,tol=0.001,max
   }
   list(mu=mu,sig=sig,lam=lam,nit=nit,weights=wi)
 }
-
-## if (FALSE) { ### SPOSTATE NEL FILE SCORE&DERIVATIVES.R
-
-## #------------------------------------------------------------------------------
-
-## eta1 <- function(u,lambda){
-## # fp.over.f.loggamma(u,lambda)
-## csiLG(u,lambda)} 
-
-## eta2 <- function(u,lambda){
-## # fp.over.f.loggamma(u,lambda)*u + 1
-## csiLG(u,lambda)*u + 1} 
-
-## eta3 <- function(u,lambda){
-## # l.score.loggamma(u,lambda)
-## psiLG(u,lambda)}
-
-## eta11f <- function(u,lambda){(eta1(u,lambda))^2*dloggamma(x=u, lambda=lambda)}
-## eta22f <- function(u,lambda){(eta2(u,lambda))^2*dloggamma(x=u, lambda=lambda)}
-## eta33f <- function(u,lambda){(eta3(u,lambda))^2*dloggamma(x=u, lambda=lambda)}
-## eta12f <- function(u,lambda){(eta1(u,lambda))*(eta2(u,lambda))*dloggamma(x=u, lambda=lambda)}
-## eta13f <- function(u,lambda){(eta1(u,lambda))*(eta3(u,lambda))*dloggamma(x=u, lambda=lambda)}
-## eta23f <- function(u,lambda){(eta2(u,lambda))*(eta3(u,lambda))*dloggamma(x=u, lambda=lambda)}
-
-## ###### MESSA NEL FILE ACOV.R E MODIFICATA
-
-## ACOV.ML.loggamma <- function(lambda,lower=-50,upper=50){
-## # Asymptotic covariance matrix of ML estimates for standard loggamma: mu=0, sigma=1
-## J11 = integrate( eta11f,lower=lower,upper=upper,lambda=lambda)$value
-## J22 = integrate( eta22f,lower=lower,upper=upper,lambda=lambda)$value
-## J33 = integrate( eta33f,lower=lower,upper=upper,lambda=lambda)$value
-## J12 = integrate( eta12f,lower=lower,upper=upper,lambda=lambda)$value
-## J13 = integrate( eta13f,lower=lower,upper=upper,lambda=lambda)$value
-## J23 = integrate( eta23f,lower=lower,upper=upper,lambda=lambda)$value
-## Jf  = matrix(c(J11,J12,J13,J12,J22,J23,J13,J23,J33),nrow=3,byrow=TRUE)
-## list(Fisher.Info=Jf, ACOV=solve(Jf))}
-
-## }

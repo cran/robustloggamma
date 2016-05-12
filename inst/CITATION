@@ -1,24 +1,28 @@
-citHeader("To cite robustloggamma in publications use:")
+bibentry(bibtype = "Article",
+  title        = "Robust Estimation of the Generalized Loggamma Model: The {R} Package {robustloggamma}",
+  author       = c(person(given = "Claudio",
+                          family = "Agostinelli"),
+                   person(given = "Alfio",
+                          family = "Marazzi",
+                          email = "Alfio.Marazzi@chuv.ch"),
+                   person(given = c("Victor", "J."),
+                          family = "Yohai",
+                          email = "victoryohai@gmail.com"),
+                   person(given = "Alex",
+                          family = "Randriamiharisoa",
+                          email = "Alex.Randriamiharisoa@chuv.ch")),
+  journal      = "Journal of Statistical Software",
+  year         = "2016",
+  volume       = "70",
+  number       = "7",
+  pages        = "1--21",
+  doi          = "10.18637/jss.v070.i07",
 
-## R >= 2.8.0 passes package metadata to citation().
-if(!exists("meta") || is.null(meta)) meta <- packageDescription("robustbase")
-year <- sub("-.*", "", meta$Date)
-note <- sprintf("R package version %s", meta$Version)
-
-citEntry(entry = "Manual",
-  title        = "{robustloggamma}: Robust estimation of the generalized log gamma model",
-  author       = personList(as.person("Claudio Agostinelli"), 
-  		   as.person("Alfio Marazzi"),
-  		   as.person("Victor J. Yohai"),
-  		   as.person("Alex Randriamiharisoa")),
-  year         = year,
-  note         = note,
-  url          = "http://CRAN.R-project.org/package=robustloggamma",
-
+  header       = "To cite robustloggamma in publications use:",
   textVersion  =
-  paste("Claudio Agostinelli, Alfio Marazzi, Victor J. Yohai and Alex Randriamiharisoa",
-        sprintf("(%s).", year),   
-        "robustloggamma: Robust estimation of the generalized log gamma model",
-        paste(note, ".", sep = ""),
-        "URL http://CRAN.R-project.org/package=robustloggamma")
+  paste("Claudio Agostinelli, Alfio Marazzi, Victor J. Yohai, Alex Randriamiharisoa (2016).",
+        "Robust Estimation of the Generalized Loggamma Model: The R Package robustloggamma.",
+        "Journal of Statistical Software, 70(7), 1-21.",
+        "doi:10.18637/jss.v070.i07")
 )
+

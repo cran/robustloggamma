@@ -3,18 +3,17 @@
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
 #	Maintainer e-mail: claudio@unive.it
-#	Date: January, 16, 2014
-#	Version: 0.1-1
-#	Copyright (C) 2014 C. Agostinelli A. Marazzi,
+#	Date: February, 25, 2015
+#	Version: 0.1-2
+#	Copyright (C) 2015 C. Agostinelli A. Marazzi,
 #                  V.J. Yohai and A. Randriamiharisoa
 #############################################################
 
 # Extended loggamma distribution
 # =======================================
 
-dloggamma <- function(x, mu=0, sigma=1, lambda, log = FALSE) {
+dloggamma <- function(x, mu=0, sigma=1, lambda, log = FALSE, zero=0.0001) {
 # generalized loggamma density
-  zero <- 0.0001
   x <- (x-mu)/sigma
   if (abs(lambda) > zero) {
     lam2 <- lambda^(-2)
@@ -27,9 +26,8 @@ dloggamma <- function(x, mu=0, sigma=1, lambda, log = FALSE) {
   return(res)
 }
 
-ploggamma <- function(q, mu=0, sigma=1, lambda, lower.tail=TRUE, log.p=FALSE) { 
+ploggamma <- function(q, mu=0, sigma=1, lambda, lower.tail=TRUE, log.p=FALSE, zero=0.0001) { 
 # generalized loggamma cdf
-  zero <- 0.0001
   q <- (q-mu)/sigma
   if (lambda < - zero)
     lower.tail <- !lower.tail
@@ -59,9 +57,8 @@ ploggamma <- function(q, mu=0, sigma=1, lambda, lower.tail=TRUE, log.p=FALSE) {
 ##   return(res$p)
 ## }
 
-qloggamma <- function(p, mu=0, sigma=1, lambda) { 
+qloggamma <- function(p, mu=0, sigma=1, lambda, zero=0.0001) { 
 # p-quantile of generalized loggamma cdf
-  zero <- 0.0001
   if (lambda < -zero) p <- 1-p
   if (abs(lambda) > zero) {
     k   <- 1/lambda^2
@@ -73,9 +70,8 @@ qloggamma <- function(p, mu=0, sigma=1, lambda) {
   return(res)
 }
 
-rloggamma <- function(n, mu=0, sigma=1, lambda) { 
+rloggamma <- function(n, mu=0, sigma=1, lambda, zero=0.0001) { 
 # generates n random generalized loggamma variates
-  zero <- 0.0001
   if (abs(lambda) > zero) { 
     alpha <- 1/lambda^2
     ei    <- rgamma(n,shape=alpha,rate=1)
@@ -87,16 +83,15 @@ rloggamma <- function(n, mu=0, sigma=1, lambda) {
   return(ui)
 }
 
-p.loggamma <- function(u,lambda) {
+p.loggamma <- function(u,lambda,zero=1e-4) {
 # derivarive wrt u of loggamma density
-  csiLG(u,lambda)*dloggamma(x=u,lambda=lambda)
+  csiLG(u,lambda)*dloggamma(x=u,lambda=lambda,zero=zero)
 }
 
 # Derivatives of cdf F_lambda(u) and density f_lambda(u)
 # ======================================================
 
-d.FL <- function(u, lambda) {
-  zero <- 0.005
+d.FL <- function(u, lambda, zero=0.005) {
 # first derivative with respect of lambda of the cdf
   if (abs(lambda) > zero) {
     temp <- try(integrate(intgpsiLG,lower=-50,upper=u,lambda=lambda), silent = TRUE)
@@ -123,48 +118,69 @@ d.FL <- function(u, lambda) {
   return(res)
 }
 
-d2.FL <- function(u,lambda){ zero <- 0.005
-# second derivative with respect of lambda of the cdf
-if (abs(lambda) > zero) {res <- d2.FL.aux(u,lambda)}
-else { 
-if (lambda == 0) {i1 <- integrate(intg4,lower=-10,upper=u)$val
-                  i2 <- integrate(intg6,lower=-10,upper=u)$val
-                  res <- -i1 + i2}
-else { y1 <- d2.FL.aux(u,-zero)
-       y2 <- d2.FL.aux(u, zero)
-       b   <- (y2-y1)/(2*zero)
-       a   <- y1 - b*(-zero)
-       res <- a+b*lambda  } }
-res}
+d.FL.1 <- function(u,lambda,zero=0.002) {
+# Alternative first derivative with respect of lambda of the cdf
+  y1 <- ploggamma(u,lambda=lambda-zero)
+  y2 <- ploggamma(u,lambda=lambda+zero)
+  b <- (y2-y1)/(2*zero)
+  return(b)
+}
 
-d.fL <- function(u,lambda){ zero=0.001
+d2.FL <- function(u,lambda,zero=0.002) {
+# second derivative with respect of lambda of the cdf
+  if (abs(lambda) > zero) {
+    res <- d2.FL.aux(u,lambda)
+  } else { 
+    if (lambda == 0) {
+      i1 <- integrate(intg4,lower=-10,upper=u)$val
+      i2 <- integrate(intg6,lower=-10,upper=u)$val
+      res <- -i1 + i2
+    } else {
+      y1 <- d2.FL.aux(u,-zero)
+      y2 <- d2.FL.aux(u, zero)
+      b   <- (y2-y1)/(2*zero)
+      a   <- y1 - b*(-zero)
+      res <- a+b*lambda
+    }
+  }
+  return(res)
+}
+
+d.fL <- function(u,lambda,zero=0.001) {
 # first derivative with respect of lambda of the density function
-if (abs(lambda) > zero)  {res <- d.fL.aux(u,lambda) }
-if (abs(lambda) <= zero) {
-       y1 <- d.fL.aux(u,-zero)
-       y2 <- d.fL.aux(u, zero)
-       b   <- (y2-y1)/(2*zero)
-       a   <- y1 - b*(-zero)
-       res <- a+b*lambda }
-res}
+  if (abs(lambda) > zero) {
+    res <- d.fL.aux(u,lambda)
+  }
+  if (abs(lambda) <= zero) {
+    y1 <- d.fL.aux(u,-zero)
+    y2 <- d.fL.aux(u, zero)
+    b <- (y2-y1)/(2*zero)
+    a <- y1 - b*(-zero)
+    res <- a+b*lambda
+  }
+  return(res)
+}
 
 # Auxiliary functions for derivatives
 
-d2.FL.aux <- function(u,lambda){
-i1 <- integrate(intgpsiLGd,lower=-50,upper=u,lambda=lambda)$val 
-i2 <- integrate(intgpsiLG2,lower=-50,upper=u,lambda=lambda)$val 
--i1 + i2}
+d2.FL.aux <- function(u,lambda) {
+  i1 <- integrate(intgpsiLGd,lower=-50,upper=u,lambda=lambda)$val 
+  i2 <- integrate(intgpsiLG2,lower=-50,upper=u,lambda=lambda)$val 
+  res <- -i1 + i2
+  return(res)
+}
 
-d.fL.aux <- function(u,lambda){
-  lamm1  <-  lambda^(-1)
-  lamm2  <-  lambda^(-2)
-  lamm3  <-  lambda^(-3)
-  llamm2 <-  log(lamm2)
-  a1     <-  log(abs(lambda))+lamm2*llamm2+lamm1*u-lamm2*exp(lambda*u)
-  a1d    <-  lamm1-2*lamm3*llamm2-2*lamm3-lamm2*u+2*lamm3*exp(lambda*u)-lamm2*u*exp(lambda*u)
-  lres   <-  a1 - lgamma(lamm2) 
-  res    <-  exp(lres)*(a1d+2*lamm3*digamma(lamm2))
-res}
+d.fL.aux <- function(u,lambda) {
+  lamm1 <- lambda^(-1)
+  lamm2 <- lambda^(-2)
+  lamm3 <- lambda^(-3)
+  llamm2 <- log(lamm2)
+  a1 <- log(abs(lambda))+lamm2*llamm2+lamm1*u-lamm2*exp(lambda*u)
+  a1d <- lamm1-2*lamm3*llamm2-2*lamm3-lamm2*u+2*lamm3*exp(lambda*u)-lamm2*u*exp(lambda*u)
+  lres <- a1 - lgamma(lamm2) 
+  res <- exp(lres)*(a1d+2*lamm3*digamma(lamm2))
+  return(res)
+}
 
 intg3 <- function(x){
 (x^3/6)*dnorm(x,mean=0,sd=1)}
@@ -252,7 +268,7 @@ else  {
     cf3 <- ( lu*(y1-y2)-ld*(y3-y2) )/(ld*ld*lu-lu*lu*ld)
     res <- cf1+cf2*lambda+cf3*lambda^2}}
 res}
-                                      
+                         
 psiLG.aux <- function(u,lambda){
 lamu   <- u*lambda
 elamu  <- exp(lamu)

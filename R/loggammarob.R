@@ -2,7 +2,7 @@
 #	loggammarob function
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
-#	Maintainer e-mail: claudio@unive.it
+#	Maintainer e-mail: claudio.agostinelli@unitn.it
 #	Date: February, 5, 2015
 #	Version: 0.2
 #	Copyright (C) 2015 C. Agostinelli A. Marazzi,
@@ -58,18 +58,19 @@ loggammarob <- function(x, start=NULL, weights=rep(1, length(x)), method=c("oneW
   return(result)
 }
 
+
 #############################################################
 #	loggammarob.control function
 #	Author: C. Agostinelli, A. Marazzi,
 #               V.J. Yohai and A. Randriamiharisoa
-#	Maintainer e-mail: claudio@unive.it
-#	Date: January, 1, 2013
-#	Version: 0.1
-#	Copyright (C) 2013 C. Agostinelli A. Marazzi,
+#	Maintainer e-mail: claudio.agostinelli@unitn.it
+#	Date: November, 27, 2015
+#	Version: 0.1-2
+#	Copyright (C) 2015 C. Agostinelli A. Marazzi,
 #                  V.J. Yohai and A. Randriamiharisoa
 #############################################################
 
-loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=6.08, lower=-7, upper=7, n=201, max.it=750, refine.tol=1e-6, nResample=100, bw=0.3, smooth=NULL, raf=c("NED","GKL","PWD","HD","SCHI2"), tau=1, subdivisions=1000, lambda.step=TRUE, sigma.step=TRUE, step=1, minw=0.04, nexp=1000, reparam=NULL, bootstrap=FALSE, bootstrap.lambda=NULL) {
+loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=6.08, lower=-7, upper=7, n=201, max.it=750, refine.tol=1e-6, solve.tol=1e-7, nResample=100, bw=0.3, smooth=NULL, raf=c("NED","GKL","PWD","HD","SCHI2"), tau=1, subdivisions=1000, lambda.step=TRUE, sigma.step=TRUE, step=1, minw=0.04, nexp=1000, reparam=NULL, bootstrap=FALSE, bootstrap.lambda=NULL, qthreshold=0.9, nTML=2000, xmax=1e100, iter=1, pcut=0.997, compute.rd=FALSE, eps.outlier = function(nobs) 0.1 / nobs) {
 
 #tuning.rho, tuning.chi # c1, c2
 #lower,upper     # optimization interval
@@ -152,7 +153,17 @@ loggammarob.control <- function(method="oneWL", tuning.rho=1.547647, tuning.psi=
   if (!is.logical(bootstrap))
     stop("'bootstrap' must be a logical")
 
-  res <- list(method=method, tuning.rho=tuning.rho, tuning.psi=tuning.psi, lower=lower, upper=upper, n=n, max.it=max.it, refine.tol=refine.tol, nResample=nResample, bw=bw, smooth=smooth, raf=raf, tau=tau, subdivisions=subdivisions, lambda.step=lambda.step, sigma.step=sigma.step,step=step,minw=minw, nexp=nexp, reparam=reparam, bootstrap=bootstrap, bootstrap.lambda=bootstrap.lambda)
+  if (qthreshold < 0.5 | qthreshold > 1)
+    stop("'qthreshold' must be in the interval [0.5,1]")
+
+  nTML <- round(nTML)
+  if (nTML < 1)
+    stop("nTML must be greater than 1")
+
+  if (pcut < 0.5 | pcut > 1)
+    stop("'pcut' must be in the interval [0.5,1]")
+
+  res <- list(method=method, tuning.rho=tuning.rho, tuning.psi=tuning.psi, lower=lower, upper=upper, n=n, max.it=max.it, refine.tol=refine.tol, solve.tol=solve.tol, nResample=nResample, bw=bw, smooth=smooth, raf=raf, tau=tau, subdivisions=subdivisions, lambda.step=lambda.step, sigma.step=sigma.step,step=step,minw=minw, nexp=nexp, reparam=reparam, bootstrap=bootstrap, bootstrap.lambda=bootstrap.lambda, qthreshold=qthreshold, nTML=nTML, xmax=xmax, iter=iter, pcut=pcut, compute.rd=compute.rd, eps.outlier=eps.outlier)
   return(res)
 }
 
@@ -298,16 +309,10 @@ loggammarob.oneWL <- function(x, start=NULL, w=rep(1, length(x)), control=loggam
     } else {
       resQ <- resWQ <- WQtauboot(ri=x,w=w,lambda=control$bootstrap.lambda,step=0.25,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
       wl <- w
-###    cat(resQ$mu1, resQ$sig1, resQ$lam1, '\n')
-###    resQ <- list(); resQ$lam1 <- control$bootstrap.lambda
     }
 
     if (!control$bootstrap)
       resWQ <- WQtau(ri=x,w=wl,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol) 
-  ## else
-  ##   resWQ <- WQtauboot(ri=x,w=wl,lambda=control$bootstrap.lambda,step=0.25,lgrid=lgrid,c1=control$tuning.rho,c2=control$tuning.psi,N=control$nResample,maxit=control$max.it,tolr=control$refine.tol)
-
-####    cat(resWQ$mu2, resWQ$sig2, resWQ$lam2, '\n')
 
     start <- c(resWQ$mu2, resWQ$sig2, resWQ$lam2)
     QTau <- list(mu=resQ$mu2, sigma=resQ$sig2, lambda=resQ$lam2, weights=w, iterations=NULL, error=NULL)
@@ -581,3 +586,4 @@ print.summary.loggammarob <- function(x, digits = max(3, getOption("digits") - 3
     summarizeRobWeights(x$weights, digits = digits, ...)
   invisible(x)
 }
+

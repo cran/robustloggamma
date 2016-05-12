@@ -1,9 +1,13 @@
 useDynLib(robustloggamma, .registration=TRUE) # -> R >= 2.3.0
 
 ###importFrom("graphics", plot)# < more ?
-importFrom(robustbase, summarizeRobWeights)
+importFrom(robustbase, summarizeRobWeights, covMcd, robMD)
+import(stats)
+import(survival)
+import(numDeriv)
+importFrom("RobustAFT", S.eq.Gauss, TML.gauss, Nrm2, s.eq.Gauss)
 ## # Export all names
-## exportPattern(".")                      
+##exportPattern(".")                      
 
 ## Functions defined in this package
 export(
@@ -12,12 +16,15 @@ export(
  qloggamma,
  rloggamma,
  loggammarob,
+ loggammacensrob,
+ loggammacenslmrob,    
  loggammarob.control,
+# loggammacenslmrob.fit,
 # loggammarob.QTau,
 # loggammarob.WQTau,
 # loggammarob.WL,
 # loggammarob.oneWL,
-# loggamma.ML,       
+# loggamma.ML,
  loggammarob.test,
  loggammarob.wilks
 )
@@ -26,5 +33,11 @@ export(
 ## in case namespace is loaded but not currently attached.
 
 S3method(print, loggammarob)
+S3method(print, loggammacenslmrob)
 S3method(summary, loggammarob)
+S3method(summary, loggammacensrob)
+S3method(summary, loggammacenslmrob)
 S3method(print, summary.loggammarob)
+S3method(print, summary.loggammacensrob)
+S3method(print, summary.loggammacenslmrob)
+S3method(nobs, loggammacenslmrob)

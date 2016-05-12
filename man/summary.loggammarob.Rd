@@ -74,8 +74,16 @@ Summary Method for \code{"loggammarob"} Objects
   \item{qconf.int}{confidence iterval for the require quantiles parameter.}  
 }
 \references{
-  C. Agostinelli, A. Marazzi and V.J. Yohai (2013) Robust estimates of
-  the generalized loggamma distribution, Technometrics, Accepted.
+  C. Agostinelli, A. Marazzi and V.J. Yohai (2015).
+  Robust estimates of the generalized loggamma distribution.
+  Technometrics, Volume 56, Issue 1, 2014.
+  doi:10.1080/00401706.2013.818578
+
+  Agostinelli C., Marazzi A., Yohai V.J., Randriamiharisoa A. (2016).
+  Robust Estimation of the Generalized Loggamma Model:
+  The R Package robustloggamma.
+  Journal of Statistical Software, 70(7), 1-21.
+  doi:10.18637/jss.v070.i07
 }
 \author{
  C. Agostinelli, A. Marazzi, V.J. Yohai and A. Randriamiharisoa

@@ -21,9 +21,13 @@ Length of stay, cost and AP-DRG for several hospital in Switzerland in 2000.
 %% \source{
 
 %% }
-%% \references{
-
-%% }
+\references{
+  Agostinelli C., Marazzi A., Yohai V.J., Randriamiharisoa A. (2016).
+  Robust Estimation of the Generalized Loggamma Model:
+  The R Package robustloggamma.
+  Journal of Statistical Software, 70(7), 1-21.
+  doi:10.18637/jss.v070.i07
+}
 
 \examples{
 data(drg2000)

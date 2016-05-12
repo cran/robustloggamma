@@ -35,9 +35,11 @@ indicators - derived from the Fourier transform.
 }
 
 \references{
-  Agostinelli C., Marazzi A, Yohai V.J. (2012). Robust estimators
-  of the generalized loggamma distribution. Submitted.
-
+  C. Agostinelli, A. Marazzi and V.J. Yohai (2015).
+  Robust estimates of the generalized loggamma distribution.
+  Technometrics, Volume 56, Issue 1, 2014.
+  doi:10.1080/00401706.2013.818578
+    
   Clarke B.R., McKinnon P.L., Riley G. (2012). A fast robust method
   for fitting gamma distributions. Statistical Papers, 53, 4, 1001-1014.
 
