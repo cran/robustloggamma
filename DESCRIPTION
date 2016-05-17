@@ -1,6 +1,6 @@
 Package: robustloggamma
-Version: 1.0-1
-Date: 2016-05-12
+Version: 1.0-2
+Date: 2016-05-16
 Title: Robust Estimation of the Generalized log Gamma Model
 Author: Claudio Agostinelli <claudio.agostinelli@unitn.it>, Alfio Marazzi <Alfio.Marazzi@chuv.ch>, Victor Yohai <vyohai@uolsinectis.com.ar> and Alex Randriamiharisoa <Alex.Randriamiharisoa@chuv.ch>
 Maintainer: Claudio Agostinelli <claudio.agostinelli@unitn.it>
@@ -10,6 +10,6 @@ Imports: robustbase, survival, numDeriv, RobustAFT (>= 1.4-1)
 LazyData: yes
 License: GPL (>= 2)
 NeedsCompilation: yes
-Packaged: 2016-05-12 10:40:30 UTC; claudio
+Packaged: 2016-05-16 19:32:49 UTC; claudio
 Repository: CRAN
-Date/Publication: 2016-05-12 14:48:15
+Date/Publication: 2016-05-17 00:48:06

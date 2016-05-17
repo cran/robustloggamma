@@ -39,6 +39,6 @@ if (!do.test) {
   SNPTest <- robustloggamma:::loggammacenslmrob.S(IX,y,delta,control=robustloggamma:::loggammacenslmrob.S.control())  
   SNP <- dget(file='Snpcensreg-savedvalues.R')
   stopifnot(
-    all.equal(SNPTest, SNP, tol = 2e-6)
+    all.equal(SNPTest, SNP, tol = 2e-5)
   )
 }
