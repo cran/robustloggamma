@@ -1,4 +1,4 @@
-60836b0e817035638c426d69d32b4dd7 *DESCRIPTION
+b2ba162e5b7684252cc2cdce6098f2a1 *DESCRIPTION
 ddb2b264ca008a8f53b1481a2c08cc5d *NAMESPACE
 92baf450caa00e0872f47a11bf643318 *R/ACOV.R
 154df57c36130cd6dd2ed899e00864ec *R/BiWeights.R
@@ -82,11 +82,11 @@ f82dd576079d587e2b68280e73bbfbf4 *src/wrapper.c
 58c0c4d9fba927f05128da5b619a0d34 *tests/TWQTau-savedvalues.R
 e0cd5feb9d5692cea69ba029d8d3878e *tests/WL-savedvalues.R
 a97a3b3dfb8571178c9dd2dbfd84187d *tests/WQTau-savedvalues.R
-4631e1e8ab48f675314b6730904dcf5d *tests/loggammacenslmrob.ML.R
-982a2cfd16c5fec401ea0401baa010d6 *tests/loggammacenslmrob.MM.R
-4741bd8bd9a5c2d412e8e9a7ce8e3995 *tests/loggammacenslmrob.S.R
-6d26a38ebd8dc26835df3d6faddee3ba *tests/loggammacenslmrob.oneTML.R
-d3362d668617d056f70079a20ebf5f37 *tests/loggammacenslmrob.oneWL.R
+7bf579a007578a37e5919bd6b0586336 *tests/loggammacenslmrob.ML.R
+4834dc4abd4f59d556dcbfba7deefd53 *tests/loggammacenslmrob.MM.R
+e3e82cce4c282bbe650a2582bf981d40 *tests/loggammacenslmrob.S.R
+5940179d3d426536be44a9299ff66ef2 *tests/loggammacenslmrob.oneTML.R
+449c4f97ee64e9739601e677ca21a933 *tests/loggammacenslmrob.oneWL.R
 43f05279bb6681cb29c1f251ea304446 *tests/loggammacensrob.ML.R
 e7ebbb482947fc2baad08cc5d739c773 *tests/loggammacensrob.TQTatu.R
 5d6576d2dda8adeaccb376d3df415e9f *tests/loggammacensrob.TWQTatu.R

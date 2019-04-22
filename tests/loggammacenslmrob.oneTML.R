@@ -23,6 +23,7 @@ if (!do.test) {
 } else {
   n <- 200
   p <- 4
+  suppressWarnings(RNGversion("3.5.0"))
   set.seed(1234)
   X <- matrix(rnorm(p*n, sd=2), ncol=p)
   mu <- 2
